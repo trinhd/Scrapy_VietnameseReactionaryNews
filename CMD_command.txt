@@ -8,6 +8,7 @@ mongoexport.exe /v /d allvnexpress /c all /f "subject,link,title,content" /type:
 
 for %f in (*.xml) do type "%f" >> ..\output.xml
 
+mongorestore.exe /v /d danlambaovn /dir:E:\MongoDB\danlambaovn /gzip /drop
 
 mongodump.exe /v /d allvnexpress /o D:\MongoData\dumpdata /gzip
 
