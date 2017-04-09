@@ -2,7 +2,7 @@ scrapy crawl -o allvnexpress.xml -t xml --logfile=allvnexpress.log allvnexpress
 
 scrapy crawl -o danlambaovn.xml -t xml --logfile=danlambaovn.log danlambaovn
 
-del /S *.pyc
+del /S *.pyc danlambaovn.log danlambaovn.xml
 
 scrapy crawl --nolog allvnexpress
 

@@ -19,6 +19,7 @@ class DanlambaovnSpider(scrapy.Spider):
 		'http://danlambaovn.blogspot.com/',
 		#'http://danlambaovn.blogspot.com/2017/04/vi-sao-cong-san-oi-cam-vinh-vien-ban.html',
 		#'http://danlambaovn.blogspot.com/2017/04/sai-gon-tiep-tuc-anh-du-kich-hit-and.html',
+		#'http://danlambaovn.blogspot.com/2017/04/viet-nam-trong-bong-toi-nhung-khong-bi.html',
 	)
 
 	"""rules = (
@@ -103,13 +104,18 @@ class DanlambaovnSpider(scrapy.Spider):
 		fFirstPara = False
 
 		for para in contents:
+			#print para.encode('utf-8')
 			if author in para:
 				if fFirstPara == False:
 					fFirstPara = True
 					#print para.encode('utf-8')
 					#print para.find(author)
 					#print len(author)
-					para = para[para.find(author) + len(author) + 14 : len(para) - 6]
+					para = para[para.find("-", para.find(author) + len(author)) + 1 : len(para) - 6]
+					index = para.rfind(">", 0, 15)
+					if index != -1:
+						para = para[index + 1:]
+					#print para.encode('utf-8')
 			if fFirstPara:
 				deTag = self.detectTag(para, 0)
 				while deTag[2] < len(para):
@@ -170,6 +176,7 @@ class DanlambaovnSpider(scrapy.Spider):
 			else: #Nguoc lai, la mot the tag binh thuong
 				sTag = sInput[iBeginAngleBracketOpen + 1:iBeginAngleBracketClose]
 
+			#print "Tag: " + sTag
 			iEndAngleBracketOpen = sInput.find('</'+sTag+'>', iBeginAngleBracketClose)
 			if iEndAngleBracketOpen == -1:
 				return ['-1','-1', iBeginAngleBracketClose + 1]
@@ -181,7 +188,7 @@ class DanlambaovnSpider(scrapy.Spider):
 	def removeHTMLSpecialEntities(self, sInput):
 		sOutput = sInput.replace("<br>\n", "\n") #Thay the tag break line
 		sOutput = sOutput.replace("<br>", "\n") #Thay the tag break line
-		sOutput = re.sub(r'<img\s[\w=\"\-\s\.]{1,}src="http:\/\/[\w\.\d\/\-]{1,}">', "",sOutput) #Thay the tag img
+		sOutput = re.sub(r'<img\s[\w=\"\-\s\.]{1,}src="http?:\/\/[\w\.\d\/\-]{1,}">', "",sOutput) #Thay the tag img
 		sOutput = re.sub(r'&(aacute|Aacute|Acirc|acirc|acute|aelig|AElig|Agrave|agrave|alpha|Alpha|amp|and|ang|Aring|aring|asymp|Atilde|atilde|Auml|auml|bdquo|beta|Beta|brvbar|bull|cap|Ccedil|ccedil|cedil|cent|circ|clubs|cong|copy|crarr|cup|curren|Chi|chi|Dagger|dagger|darr|deg|delta|Delta|diams|divide|Eacute|eacute|Ecirc|ecirc|Egrave|egrave|empty|emsp|ensp|epsilon|Epsilon|equiv|eta|Eta|eth|ETH|euml|Euml|euro|exist|fnof|forall|frac12|frac14|frac34|gamma|Gamma|ge|gt|harr|hearts|hellip|Iacute|iacute|Icirc|icirc|iexcl|igrave|Igrave|infin|int|iota|Iota|iquest|isin|iuml|Iuml|kappa|Kappa|lambda|Lambda|laquo|larr|lceil|ldquo|le|lfloor|lowast|loz|lrm|lsaquo|lsquo|lt|macr|mdash|micro|minus|Mu|mu|nabla|nbsp|ndash|ne|ni|not|notin|nsub|ntilde|Ntilde|nu|Nu|oacute|Oacute|ocirc|Ocirc|oelig|OElig|ograve|Ograve|oline|Omega|omega|Omicron|omicron|oplus|or|ordf|ordm|oslash|Oslash|otilde|Otilde|otimes|Ouml|ouml|para|part|permil|perp|Pi|pi|piv|plusmn|pound|Prime|prime|prod|prop|Psi|psi|phi|Phi|radic|raquo|rarr|rceil|rdquo|reg|rfloor|rho|Rho|rlm|rsaquo|rsquo|sbquo|scaron|Scaron|sdot|sect|shy|Sigma|sigma|sigmaf|sim|spades|sub|sube|sum|sup|sup1|sup2|sup3|supe|szlig|tau|Tau|tilde|times|there4|Theta|theta|thetasym|thinsp|thorn|THORN|trade|uacute|Uacute|uarr|Ucirc|ucirc|Ugrave|ugrave|uml|upsih|upsilon|Upsilon|Uuml|uuml|Xi|xi|yacute|Yacute|yen|yuml|Yuml|Zeta|zeta|zwj|zwnj|;)+', "", sOutput)
 		return sOutput
 
