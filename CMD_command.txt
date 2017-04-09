@@ -1,0 +1,16 @@
+scrapy crawl -o allvnexpress.xml -t xml --logfile=allvnexpress.log allvnexpress
+
+scrapy crawl -o danlambaovn.xml -t xml --logfile=danlambaovn.log danlambaovn
+
+scrapy crawl --nolog allvnexpress
+
+mongoexport.exe /v /d allvnexpress /c all /f "subject,link,title,content" /type:csv /o D:\all.csv
+
+for %f in (*.xml) do type "%f" >> ..\output.xml
+
+
+mongodump.exe /v /d allvnexpress /o D:\MongoData\dumpdata /gzip
+
+db.all.find({}, {_id: 0, link: 1}).forEach(function(doc) { db.crawledLinks.insert({crawled: doc.link}); });
+
+db.all.distinct("subject").forEach(function(subj) { print(subj + " : " + db.all.find({subject: subj}).count()); });
