@@ -18,6 +18,7 @@ class DanlambaovnSpider(scrapy.Spider):
 	start_urls = (
 		'http://danlambaovn.blogspot.com/',
 		#'http://danlambaovn.blogspot.com/2017/04/vi-sao-cong-san-oi-cam-vinh-vien-ban.html',
+		#'http://danlambaovn.blogspot.com/2017/04/sai-gon-tiep-tuc-anh-du-kich-hit-and.html',
 	)
 
 	"""rules = (
@@ -72,7 +73,7 @@ class DanlambaovnSpider(scrapy.Spider):
 				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
-		contents = response.xpath('//div[@style="text-align: justify;"]/text()').extract()
+		contents = response.xpath('//div[@style="text-align: justify;"]').extract()
 		title = response.xpath('//h2[@class="post-title entry-title"]/text()').extract_first()
 		author = response.xpath('//div[@style="text-align: justify;"]/b/i/a/text()').extract_first()
 		created = response.xpath('//abbr[@class="published"]/@title').extract_first()
@@ -97,24 +98,36 @@ class DanlambaovnSpider(scrapy.Spider):
 		if len(contents) == 0:
 			return
 
-		"""for para in contents:
-			deTag = self.detectTag(para, 0)
-			while deTag[2] < len(para):
-				if deTag[0] != '-1' and deTag[1] != '-1':
-					para = para.replace(deTag[0], '', 1).replace(deTag[1], '', 1)
-				deTag = self.detectTag(para, deTag[2])
-			document = document + " " + para"""
-
 		document = ""
 
-		for i in range(1, len(contents) - 1):
+		fFirstPara = False
+
+		for para in contents:
+			if author in para:
+				if fFirstPara == False:
+					fFirstPara = True
+					#print para.encode('utf-8')
+					#print para.find(author)
+					#print len(author)
+					para = para[para.find(author) + len(author) + 14 : len(para) - 6]
+			if fFirstPara:
+				deTag = self.detectTag(para, 0)
+				while deTag[2] < len(para):
+					if deTag[0] != '-1' and deTag[1] != '-1':
+						para = para.replace(deTag[0], '', 1).replace(deTag[1], '', 1)
+					deTag = self.detectTag(para, deTag[2])
+				document = document + " " + para
+
+		"""for i in range(1, len(contents) - 1):
 			deTag = self.detectTag(contents[i], 0)
 			while deTag[2] < len(contents[i]):
 				if deTag[0] != '-1' and deTag[1] != '-1':
 					contents[i] = contents[i].replace(deTag[0], '', 1).replace(deTag[1], '', 1)
 				deTag = self.detectTag(contents[i], deTag[2])
-			document = document + " " + contents[i]
+			document = document + " " + contents[i]"""
 		
+		#document = document.replace(author, "", 1)
+
 		content = self.removeHTMLSpecialEntities(document)
 
 		"""collAll = db.all

@@ -2,6 +2,8 @@ scrapy crawl -o allvnexpress.xml -t xml --logfile=allvnexpress.log allvnexpress
 
 scrapy crawl -o danlambaovn.xml -t xml --logfile=danlambaovn.log danlambaovn
 
+del /S *.pyc
+
 scrapy crawl --nolog allvnexpress
 
 mongoexport.exe /v /d allvnexpress /c all /f "subject,link,title,content" /type:csv /o D:\all.csv
