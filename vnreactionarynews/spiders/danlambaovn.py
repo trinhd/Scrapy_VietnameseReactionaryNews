@@ -43,8 +43,9 @@ class DanlambaovnSpider(scrapy.Spider):
 		#re.compile(r'.*\/tin\-tuc\/cuoi\/.*'),
 		#re.compile(r'.*video\.vnexpress\.net.*'),
 		#re.compile(r'.*ione\.vnexpress\.net.*'),
-		#re.compile(r'.*raovat\.vnexpress\.net.*')
-		re.compile(r'.*danlambaovn\.blogspot\.com\/search.*')
+		#re.compile(r'.*raovat\.vnexpress\.net.*'),
+		re.compile(r'.*danlambaovn\.blogspot\.com\/search.*'),
+		re.compile(r'https:\/\/danlambaovn\.blogspot\.com.*'),
 	]
 	allowLinks = [
 		#re.compile(r'.*\/tin\-tuc\/giao\-duc.*'),
