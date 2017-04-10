@@ -8,9 +8,12 @@ mongorestore.exe /v /d danlambaovn /dir:E:\MongoDB\danlambaovn /gzip /drop
 
 mongodump.exe /v /d danlambaovn /o D:\MongoData /gzip
 
+db.all.aggregate([ { $group: { _id: "$title", count: { $sum: 1 } } }, { $match: { "count": { $gt: 1 } } }, { $sort: { "count": -1, _id: 1 } } ])
 
 db.all.find({}, {_id: 0, link: 1}).forEach(function(doc) { db.crawledLinks.insert({crawled: doc.link}); });
 
+mongoexport.exe /v /d danlambaovn /c all /f "title,link,author,created,content" /type:csv /o D:\all.csv
 
+db.all.distinct("subject").forEach(function(subj) { print(subj + " : " + db.all.find({subject: subj}).count()); });
 
 for %f in (*.xml) do type "%f" >> ..\output.xml
