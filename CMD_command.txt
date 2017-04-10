@@ -1,19 +1,16 @@
-scrapy crawl -o allvnexpress.xml -t xml --logfile=allvnexpress.log allvnexpress
-
 scrapy crawl -o danlambaovn.xml -t xml --logfile=danlambaovn.log danlambaovn
 
 del /S *.pyc danlambaovn.log danlambaovn.xml
 
-scrapy crawl --nolog allvnexpress
-
-mongoexport.exe /v /d allvnexpress /c all /f "subject,link,title,content" /type:csv /o D:\all.csv
-
-for %f in (*.xml) do type "%f" >> ..\output.xml
+scrapy crawl --nolog danlambaovn
 
 mongorestore.exe /v /d danlambaovn /dir:E:\MongoDB\danlambaovn /gzip /drop
 
-mongodump.exe /v /d allvnexpress /o D:\MongoData\dumpdata /gzip
+mongodump.exe /v /d danlambaovn /o D:\MongoData /gzip
+
 
 db.all.find({}, {_id: 0, link: 1}).forEach(function(doc) { db.crawledLinks.insert({crawled: doc.link}); });
 
-db.all.distinct("subject").forEach(function(subj) { print(subj + " : " + db.all.find({subject: subj}).count()); });
+
+
+for %f in (*.xml) do type "%f" >> ..\output.xml
