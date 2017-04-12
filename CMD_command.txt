@@ -1,6 +1,8 @@
 scrapy crawl -o danlambaovn.xml -t xml --logfile=danlambaovn.log danlambaovn
+scrapy crawl -o quanlambao.xml -t xml --logfile=quanlambao.log quanlambao
 
 del /S *.pyc danlambaovn.log danlambaovn.xml
+del /S *.pyc quanlambao.log quanlambao.xml
 
 scrapy crawl --nolog danlambaovn
 

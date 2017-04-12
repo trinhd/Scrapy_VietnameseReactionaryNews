@@ -39,7 +39,7 @@ class VNReactionaryNewsPipeline(object):
         return item
         
     def open_spider(self, spider):
-        self.db = self.client.danlambaovn
+        self.db = self.client.quanlambao
 
     def close_spider(self, spider):
         self.client.close()

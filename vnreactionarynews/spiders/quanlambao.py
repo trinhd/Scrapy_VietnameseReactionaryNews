@@ -75,9 +75,9 @@ class QuanLamBaoSpider(scrapy.Spider):
 				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
-		contents = response.xpath('//div[@style="text-align: justify;"]').extract()
-		title = response.xpath('//h2[@class="post-title entry-title"]/text()').extract_first()
-		created = response.xpath('//abbr[@class="published"]/@title').extract_first()
+		contents = response.xpath('//span[@style="font-family: Arial, Helvetica, sans-serif;"]').extract()
+		title = response.xpath('//h3[@class="post-title entry-title"]/text()').extract_first()
+		created = response.xpath('//h2[@class="date-header"]/span/text()').extract_first()
 
 		author = response.xpath('//span[@style="color: #1f4f82;"]').extract_first()
 		if author == None:
@@ -109,7 +109,7 @@ class QuanLamBaoSpider(scrapy.Spider):
 
 		document = ""
 
-		fFirstPara = False
+		"""fFirstPara = False
 
 		for para in contents:
 			#print para.encode('utf-8')
@@ -132,7 +132,7 @@ class QuanLamBaoSpider(scrapy.Spider):
 					deTag = self.detectTag(para, deTag[2])
 				document = document + " " + para
 
-		"""for i in range(1, len(contents) - 1):
+		for i in range(1, len(contents) - 1):
 			deTag = self.detectTag(contents[i], 0)
 			while deTag[2] < len(contents[i]):
 				if deTag[0] != '-1' and deTag[1] != '-1':
@@ -141,6 +141,14 @@ class QuanLamBaoSpider(scrapy.Spider):
 			document = document + " " + contents[i]"""
 		
 		#document = document.replace(author, "", 1)
+
+		for para in contents:
+			deTag = self.detectTag(para, 0)
+			while deTag[2] < len(para):
+				if deTag[0] != '-1' and deTag[1] != '-1':
+					para = para.replace(deTag[0], '', 1).replace(deTag[1], '', 1)
+				deTag = self.detectTag(para, deTag[2])
+			document = document + " " + para
 
 		content = self.removeHTMLSpecialEntities(document)
 
