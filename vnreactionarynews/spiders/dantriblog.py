@@ -14,7 +14,7 @@ from pymongo import MongoClient
 
 class DantriblogSpider(scrapy.Spider):
 	name = "dantriblog"
-	allowed_domains = ["dantri.com.vn/blog/"]
+	allowed_domains = ["dantri.com.vn"]
 	start_urls = (
 		'http://dantri.com.vn/blog.htm',
 		#'http://dantriblog.blogspot.com/2017/04/vi-sao-cong-san-oi-cam-vinh-vien-ban.html',
@@ -70,11 +70,16 @@ class DantriblogSpider(scrapy.Spider):
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 		for link in links:
+			#print link
+			if link.find("/blog/") == 0:
+				link = "http://dantri.com.vn" + link
+			#print link
 			if linkPattern.match(link) and self.linkFilter(link) and not self.linkCrawled(link):
 				collCrawledLinks.insert_one({"crawled": link})
 				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
+		#print response
 		shortIntro = response.xpath('//h2[@class="blogsapo"]/text()').extract_first()
 		contents = response.xpath('//div[@id="divNewsContent"]/p/text()').extract()
 		title = response.xpath('//a[@id="ctl00_IDContent_BlogDetail1_hplTitle"]/text()').extract_first()
@@ -231,9 +236,11 @@ class DantriblogSpider(scrapy.Spider):
 			originUrl = url[:url.find(self.linkSuffix) + len(self.linkSuffix)]
 			for link in self.crawledLinks:
 				if link.find(originUrl) != -1:
+					#print "Crawled, True!"
 					return True
-		else
+		else:
 			return (url in self.crawledLinks)
+		#print "Crawled, False!"
 		return False
 
 	def detectEnglish(self, sContent):
